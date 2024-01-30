@@ -1,0 +1,147 @@
+<h1>hola este es mi primer proyecto</h1>
+<h2>{{ welcome }}</h2>
+<ul>
+  <p>total: {{ tasksOld.length }}</p>
+  <li *ngFor="let task of tasksOld; index as i">
+    {{ i }} {{ task }}
+  </li>
+</ul>
+
+<hr />
+
+<h2>{{ 'Hola'.repeat(4) }}</h2>
+<p>la suma de 3 + 3 es {{ 3+3 }}</p>
+<p>Hola soy {{ name }} y mi edad es {{ age }}</p>
+
+<hr />
+
+<img [src]="img" alt="Imagen" height="50">
+<input type="text" [value]="name" />
+<button [disabled]="true">Click me</button>
+<p>person: {{ person.name }}</p>
+
+<hr />
+
+<button (click)="clickHandler()">Click me</button>
+<button (dblclick)="clickHandler()">Double Click</button>
+<p>(change)</p>
+<input type="number" [value]="person.age" (change)="changeHandler($event)"/>
+<p>(keydown)</p>
+<input type="text" [value]="person.name" (keydown)="keydownHandler($event)"/>
+<p>(keydown + pressing shift + t)</p>
+<input type="text" [value]="person.name" (keydown.shift.t)="clickHandler()"/>
+
+<hr />
+
+<h2>Signals</h2>
+<input type="text" [value]="nameSignal()" (change)="changeSignalNameHandler($event)"/>
+<p>{{ nameSignal() }}</p>
+
+<ul>
+  <p>total: {{ tasks().length }}</p>
+  <li *ngFor="let task of tasks(); index as i">
+    {{ i }} {{ task }}
+  </li>
+</ul>
+
+<hr />
+
+<h2>ngIf</h2>
+
+<div *ngIf="tasks().length > 0; else elseBlock">
+  hay {{ tasks().length }} tareas
+</div>
+<ng-template #elseBlock>
+  no hay tareas
+</ng-template>
+
+<hr />
+
+<h2>ngSwitch</h2>
+<input type="text" [value]="personSignals().name" (change)="changeName($event)"/>
+<br />
+<div [ngSwitch]="personSignals().name">
+  <p *ngSwitchCase="'Juan Luis Oropeza'"> yo soy juan luis</p>
+  <p *ngSwitchCase="'Julian'">yo soy julian</p>
+  <p *ngSwitchCase="'Ana'">yo soy Ana</p>
+  <p *ngSwitchDefault>no soy nadie</p>
+</div>
+
+<hr />
+
+<h2>ngSwitch</h2>
+<input type="color" [formControl]="colorCtrl"/>
+<p>Color: {{ colorCtrl.value }}</p>
+<svg>
+  <g>
+    <rect x="0" y="0" height="100" width="100" [attr.fill]="colorCtrl.value" />
+  </g>
+</svg>
+
+<hr />
+
+<h2>Estilos</h2>
+<input type="number" [formControl]="widthCtrl" />
+<span class="box" [style.width.px]="widthCtrl.value"></span>
+
+<hr />
+
+<h2>Estilos</h2>
+<p>
+  <input type="text" [formControl]="nameCtrl"/>
+  <br />
+  <span class="message-error" [class.show]="nameCtrl.invalid && nameCtrl.touched">Nombre invalido</span>
+</p>
+<p>
+  <input type="text" />
+</p>
+
+<hr />
+
+<h2>Nueva sintaxis (Angular 17)</h2>
+<h5>if</h5>
+@if ( nameSignal() === "Juan Luis" ){
+<div>
+  Soy Juan Luis
+</div>
+}
+
+<h5>if - else</h5>
+@if ( tasks().length > 0 ){ 
+  <div>
+    hay {{ tasks().length }} tareas
+  </div>
+} @else {
+  <div>no hay tareas</div>
+}
+
+<h5>for</h5>
+<ul>
+@for(task of tasks(); track task; let i  = $index) {
+  <li>{{ i }} {{ task }}</li>
+} @empty {
+  <li><strong>La lista esta vacia</strong></li>
+}
+</ul>
+
+<h5>switch</h5>
+<div>
+  @switch(personSignals().name) {
+    @case('Juan Luis Oropeza'){
+      <p>yo soy juan luis</p>
+    }
+    @case('Julian'){
+      <p>yo soy Julian</p>
+    }
+    @case('Ana'){
+      <p>yo soy Ana</p>
+    }
+    @default {
+      <p>yo no soy nadie</p>
+    }
+  }
+</div>
+
+<br />
+
+

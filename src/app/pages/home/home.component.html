@@ -1,0 +1,74 @@
+<section class="todoapp">
+    <header class="header">
+      <div class="container">
+        <h1>My Day</h1>
+        <p>All my tasks in one place</p>
+        <input
+          class="new-todo"
+          placeholder="Type new todo"
+          autofocus
+          type="text"
+          [formControl]="newTaskCtrl"
+          (keydown.enter)="changeHandler()"
+        />
+      </div>
+    </header>
+    <div class="container todoapp-wrapper">
+      <section class="main">
+        <ul class="todo-list">
+          <!-- <li 
+            *ngFor="let task of tasksByFilter(); index as i" 
+            (dblclick)="updateTaskEditingMode(i)"
+            [class.completed]="task.completed" 
+            [class.editing]="task.editing"
+          > -->
+          @for (task of tasksByFilter(); track task; let i = $index) {
+            <li 
+              (dblclick)="updateTaskEditingMode(i)"
+              [class.completed]="task.completed" 
+              [class.editing]="task.editing"
+            >
+              <div class="view">
+                <input class="toggle" type="checkbox" [checked]="task.completed" (change)="updateTask(i)"/>
+                <label>{{ task.title }}</label>
+                <button class="destroy" (click)="deleteTask(i)"></button>
+              </div>
+              <input class="edit" [value]="task.title" (keydown.enter)="updateTaskText(i, $event)" />
+            </li>
+          }
+        </ul>
+      </section>
+      @if (tasksByFilter().length > 0) {
+        <!-- <footer class="footer" *ngIf="tasksByFilter().length > 0"> -->
+        <footer class="footer">
+          <span class="todo-count">
+            <strong>{{ tasksByFilter().length }} </strong>
+
+            <!-- <span *ngIf="tasksByFilter().length === 1; else elseBlock">item</span>
+            <ng-template #elseBlock>
+              items
+            </ng-template> -->
+
+            @if (tasksByFilter().length === 1) {
+              <span>item</span>
+            } @else {
+              <span>items</span>
+            }
+
+          </span>
+          <ul class="filters">
+            <li>
+              <a (click)="changeFilter('all')" [class.selected]="filter() === 'all'">All</a>
+            </li>
+            <li>
+              <a (click)="changeFilter('pending')" [class.selected]="filter() === 'pending'">Pending</a>
+            </li>
+            <li>
+              <a (click)="changeFilter('completed')" [class.selected]="filter() === 'completed'">Completed</a>
+            </li>
+          </ul>
+          <button class="clear-completed">Clear completed</button>
+        </footer>
+      }
+    </div>
+  </section>
