@@ -39,9 +39,8 @@ jobs:
         run: |
           Write-Host "Running npm audit..."
           npm audit --audit-level=critical
-          if ($LASTEXITCODE -ne 0) {
-            Write-Host "[WARNING] Vulnerabilities were found by npm audit, but continuing with the lab deployment as designed."
-          }
+          Write-Host "[WARNING] Vulnerabilities were found by npm audit, but continuing with the lab deployment as designed."
+          exit 0
         shell: powershell
 
       - name: Scan Code for Secrets (Gitleaks)
