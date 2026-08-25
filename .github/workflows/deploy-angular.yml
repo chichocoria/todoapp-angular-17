@@ -19,7 +19,7 @@ env:
 jobs:
   build-and-deploy:
     name: Build & Deploy Angular to IIS - Develop
-    runs-on: [self-hosted] # O el tag específico de tu runner
+    runs-on: [self-hosted]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -41,7 +41,7 @@ jobs:
           Write-Host "Artifact Contents:"
           Write-Host "═══════════════════════════════════════"
           Get-ChildItem -Path "${{ env.OUTPUT_PATH }}" -Recurse | Select-Object FullName, Length
-        shell: pwsh
+        shell: powershell
 
       - name: Stop IIS Application Pool
         run: |
@@ -55,7 +55,7 @@ jobs:
             Write-Host "❌ Error stopping app pool: $_"
             exit 1
           }
-        shell: pwsh
+        shell: powershell
 
       - name: Backup current deployment
         run: |
@@ -70,7 +70,7 @@ jobs:
           } else {
             Write-Host "ℹ️ No existing deployment found. Skipping backup."
           }
-        shell: pwsh
+        shell: powershell
 
       - name: Clear deployment directory
         run: |
@@ -83,7 +83,7 @@ jobs:
             New-Item -ItemType Directory -Path "${{ env.DEPLOYMENT_PATH }}" -Force | Out-Null
             Write-Host "✅ Deployment directory created"
           }
-        shell: pwsh
+        shell: powershell
 
       - name: Deploy new files
         run: |
@@ -99,7 +99,7 @@ jobs:
             Write-Host "❌ Error deploying files: $_"
             exit 1
           }
-        shell: pwsh
+        shell: powershell
 
       - name: Start IIS Application Pool
         run: |
@@ -113,7 +113,7 @@ jobs:
             Write-Host "❌ Error starting app pool: $_"
             exit 1
           }
-        shell: pwsh
+        shell: powershell
 
       - name: Verify IIS Application Pool status
         run: |
@@ -131,7 +131,7 @@ jobs:
             Write-Host "❌ Error checking app pool status: $_"
             exit 1
           }
-        shell: pwsh
+        shell: powershell
 
       - name: Deployment Summary
         if: success()
@@ -146,7 +146,7 @@ jobs:
           Write-Host "Deployment Path: ${{ env.DEPLOYMENT_PATH }}"
           Write-Host "Deployed At: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
           Write-Host ""
-        shell: pwsh
+        shell: powershell
 
       - name: Deployment Failed Notification
         if: failure()
@@ -168,4 +168,4 @@ jobs:
             Write-Host "❌ Error starting app pool: $_"
             exit 1
           }
-        shell: pwsh
+        shell: powershell
