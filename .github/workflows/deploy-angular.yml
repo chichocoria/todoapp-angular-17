@@ -14,7 +14,7 @@ env:
   BACKUP_PATH: 'C:\IIS\BACKUPS\todoapp'
   IIS_APP_POOL_NAME: 'todoapp'
   DEPLOYMENT_PATH: 'C:\inetpub\wwwroot\todoapp'
-  OUTPUT_PATH: './dist/todoapp/browser' # Ajusta según la versión exacta del build de Angular 17
+  OUTPUT_PATH: './dist/todoapp/browser'
 
 jobs:
   build-and-deploy:
@@ -37,9 +37,9 @@ jobs:
 
       - name: Display artifact contents
         run: |
-          Write-Host "═══════════════════════════════════════"
+          Write-Host "======================================="
           Write-Host "Artifact Contents:"
-          Write-Host "═══════════════════════════════════════"
+          Write-Host "======================================="
           Get-ChildItem -Path "${{ env.OUTPUT_PATH }}" -Recurse | Select-Object FullName, Length
         shell: powershell
 
@@ -49,10 +49,10 @@ jobs:
           try {
             Import-Module WebAdministration
             Stop-WebAppPool -Name "${{ env.IIS_APP_POOL_NAME }}" -ErrorAction Stop
-            Write-Host "✅ App Pool stopped successfully"
+            Write-Host "[SUCCESS] App Pool stopped successfully"
             Start-Sleep -Seconds 3
           } catch {
-            Write-Host "❌ Error stopping app pool: $_"
+            Write-Host "[ERROR] Error stopping app pool: $_"
             exit 1
           }
         shell: powershell
@@ -66,9 +66,9 @@ jobs:
           if (Test-Path "${{ env.DEPLOYMENT_PATH }}") {
             Write-Host "Creating backup at: $backupPath"
             Copy-Item -Path "${{ env.DEPLOYMENT_PATH }}" -Destination $backupPath -Recurse -Force
-            Write-Host "✅ Backup created successfully"
+            Write-Host "[SUCCESS] Backup created successfully"
           } else {
-            Write-Host "ℹ️ No existing deployment found. Skipping backup."
+            Write-Host "[INFO] No existing deployment found. Skipping backup."
           }
         shell: powershell
 
@@ -77,11 +77,11 @@ jobs:
           Write-Host "Clearing deployment directory: ${{ env.DEPLOYMENT_PATH }}"
           if (Test-Path "${{ env.DEPLOYMENT_PATH }}") {
             Remove-Item -Path "${{ env.DEPLOYMENT_PATH }}\*" -Recurse -Force -ErrorAction Stop
-            Write-Host "✅ Deployment directory cleared"
+            Write-Host "[SUCCESS] Deployment directory cleared"
           } else {
             Write-Host "Creating deployment directory..."
             New-Item -ItemType Directory -Path "${{ env.DEPLOYMENT_PATH }}" -Force | Out-Null
-            Write-Host "✅ Deployment directory created"
+            Write-Host "[SUCCESS] Deployment directory created"
           }
         shell: powershell
 
@@ -90,13 +90,13 @@ jobs:
           Write-Host "Deploying files to: ${{ env.DEPLOYMENT_PATH }}"
           try {
             Copy-Item -Path "${{ env.OUTPUT_PATH }}\*" -Destination "${{ env.DEPLOYMENT_PATH }}" -Recurse -Force -ErrorAction Stop
-            Write-Host "✅ Files deployed successfully"
-            Write-Host "═══════════════════════════════════════"
+            Write-Host "[SUCCESS] Files deployed successfully"
+            Write-Host "======================================="
             Write-Host "Deployed contents:"
-            Write-Host "═══════════════════════════════════════"
+            Write-Host "======================================="
             Get-ChildItem -Path "${{ env.DEPLOYMENT_PATH }}" -Recurse | Select-Object FullName
           } catch {
-            Write-Host "❌ Error deploying files: $_"
+            Write-Host "[ERROR] Error deploying files: $_"
             exit 1
           }
         shell: powershell
@@ -107,10 +107,10 @@ jobs:
           try {
             Import-Module WebAdministration
             Start-WebAppPool -Name "${{ env.IIS_APP_POOL_NAME }}" -ErrorAction Stop
-            Write-Host "✅ App Pool started successfully"
+            Write-Host "[SUCCESS] App Pool started successfully"
             Start-Sleep -Seconds 5
           } catch {
-            Write-Host "❌ Error starting app pool: $_"
+            Write-Host "[ERROR] Error starting app pool: $_"
             exit 1
           }
         shell: powershell
@@ -123,12 +123,12 @@ jobs:
             $poolStatus = Get-WebAppPoolState -Name "${{ env.IIS_APP_POOL_NAME }}"
             Write-Host "App Pool Status: $($poolStatus.Value)"
             if ($poolStatus.Value -ne "Started") {
-              Write-Host "⚠️ Warning: App Pool is not in 'Started' state"
+              Write-Host "[WARNING] App Pool is not in 'Started' state"
               exit 1
             }
-            Write-Host "✅ App Pool is running"
+            Write-Host "[SUCCESS] App Pool is running"
           } catch {
-            Write-Host "❌ Error checking app pool status: $_"
+            Write-Host "[ERROR] Error checking app pool status: $_"
             exit 1
           }
         shell: powershell
@@ -137,9 +137,9 @@ jobs:
         if: success()
         run: |
           Write-Host ""
-          Write-Host "╔════════════════════════════════════════╗"
-          Write-Host "║      Deployment Completed ✅          ║"
-          Write-Host "╚════════════════════════════════════════╝"
+          Write-Host "========================================"
+          Write-Host "      Deployment Completed [SUCCESS]    "
+          Write-Host "========================================"
           Write-Host "Environment: Develop"
           Write-Host "Site Name: ${{ env.IIS_SITE_NAME }}"
           Write-Host "App Pool: ${{ env.IIS_APP_POOL_NAME }}"
@@ -152,9 +152,9 @@ jobs:
         if: failure()
         run: |
           Write-Host ""
-          Write-Host "╔════════════════════════════════════════╗"
-          Write-Host "║      Deployment Failed ❌             ║"
-          Write-Host "╚════════════════════════════════════════╝"
+          Write-Host "========================================"
+          Write-Host "      Deployment Failed [ERROR]         "
+          Write-Host "========================================"
           Write-Host "Please check the logs above for details."
           Write-Host "Failed At: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
           Write-Host ""
@@ -162,10 +162,10 @@ jobs:
           try {
             Import-Module WebAdministration
             Start-WebAppPool -Name "${{ env.IIS_APP_POOL_NAME }}" -ErrorAction Stop
-            Write-Host "✅ App Pool started successfully"
+            Write-Host "[SUCCESS] App Pool started successfully"
             Start-Sleep -Seconds 5
           } catch {
-            Write-Host "❌ Error starting app pool: $_"
+            Write-Host "[ERROR] Error starting app pool: $_"
             exit 1
           }
         shell: powershell
