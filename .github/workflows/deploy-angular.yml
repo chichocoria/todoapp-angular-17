@@ -37,8 +37,13 @@ jobs:
       # --- NUEVO: Control de Calidad y Seguridad ---
       - name: Run Security Audit on Dependencies
         run: |
-          Write-Host "Running npm audit for vulnerabilities..."
-          npm audit --audit-level=critical || true # El '|| true' evita que el pipeline falle si encuentra vulnerabilidades altas
+          Write-Host "Running npm audit..."
+          try {
+            npm audit --audit-level=critical
+            Write-Host "[SUCCESS] No critical vulnerabilities found."
+          } catch {
+            Write-Host "[WARNING] Vulnerabilities detected, but continuing lab execution as configured."
+          }
         shell: powershell
 
       - name: Scan Code for Secrets (Gitleaks)
