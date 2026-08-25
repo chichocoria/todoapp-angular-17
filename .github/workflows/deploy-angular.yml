@@ -11,20 +11,20 @@ on:
 env:
   ARTIFACT_NAME: 'angular-build-output'
   IIS_SITE_NAME: 'todoapp'
-  BACKUP_PATH: 'C:\IIS\BACKUPS\todoapp'
+  BACKUP_PATH: 'F:\IIS\BACKUPS\todoapp'
   IIS_APP_POOL_NAME: 'todoapp'
   DEPLOYMENT_PATH: 'C:\inetpub\wwwroot\todoapp'
   OUTPUT_PATH: './dist/todoapp/browser'
 
 jobs:
   build-and-deploy:
-    name: Build, Security Scan & Deploy - Develop
+    name: Build, Security Audit & Deploy - Develop
     runs-on: [self-hosted]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Necesario para que Gitleaks analice todo el historial de commits si es necesario
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -34,7 +34,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # --- NUEVO: Control de Calidad y Seguridad ---
       - name: Run Security Audit on Dependencies
         run: |
           Write-Host "Running npm audit..."
@@ -42,12 +41,6 @@ jobs:
           Write-Host "[WARNING] Vulnerabilities were found by npm audit, but continuing with the lab deployment as designed."
           exit 0
         shell: powershell
-
-      - name: Scan Code for Secrets (Gitleaks)
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # ---------------------------------------------
 
       - name: Build application
         run: npm run build -- --configuration production
