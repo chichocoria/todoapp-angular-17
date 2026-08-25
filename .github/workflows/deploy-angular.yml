@@ -18,11 +18,13 @@ env:
 
 jobs:
   build-and-deploy:
-    name: Build & Deploy Angular to IIS - Develop
+    name: Build, Security Scan & Deploy - Develop
     runs-on: [self-hosted]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Necesario para que Gitleaks analice todo el historial de commits si es necesario
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -31,6 +33,19 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      # --- NUEVO: Control de Calidad y Seguridad ---
+      - name: Run Security Audit on Dependencies
+        run: |
+          Write-Host "Running npm audit for vulnerabilities..."
+          npm audit --audit-level=high
+        shell: powershell
+
+      - name: Scan Code for Secrets (Gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # ---------------------------------------------
 
       - name: Build application
         run: npm run build -- --configuration production
